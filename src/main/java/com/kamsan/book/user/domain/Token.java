@@ -2,6 +2,9 @@ package com.kamsan.book.user.domain;
 
 import java.time.OffsetDateTime;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
 
 import jakarta.persistence.Column;
@@ -30,11 +33,12 @@ public class Token extends AbstractAuditingEntity<Long> {
 	private String token;
 	@Column(name = "expires_at", nullable = false)
 	private OffsetDateTime expiresAt;
-	@Column(name = "validated_at", nullable = false)
+	@Column(name = "validated_at", nullable = true)
 	private OffsetDateTime validatedAt;
 	
 	@ManyToOne	
 	@JoinColumn(name = "user_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private User user;
 
 

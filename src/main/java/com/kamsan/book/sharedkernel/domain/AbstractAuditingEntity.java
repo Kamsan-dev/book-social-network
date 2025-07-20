@@ -1,7 +1,7 @@
 package com.kamsan.book.sharedkernel.domain;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,9 +21,9 @@ public abstract class AbstractAuditingEntity<T> implements Serializable {
 
 	@CreatedDate
 	@Column(updatable = false, name = "created_date", nullable = false)
-	private OffsetDateTime createdDate = OffsetDateTime.now();
+	private Instant createdDate;
 
 	@LastModifiedDate
 	@Column(name = "last_modified_date", insertable = false)
-	private OffsetDateTime lastModifiedDate = OffsetDateTime.now();
+	private Instant lastModifiedDate;
 }

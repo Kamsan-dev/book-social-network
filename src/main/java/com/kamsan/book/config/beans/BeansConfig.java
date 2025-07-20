@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.kamsan.book.user.application.service.UserDetailsServiceImpl;
 import com.kamsan.book.user.application.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,11 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class BeansConfig {
-	private final UserService userService;
+	private final UserDetailsServiceImpl userDetailsServiceImpl;
+	
     @Bean
-    public UserDetailsService userDetailsService(UserService userService) {
-        return userService;
+    public UserDetailsService userDetailsService(UserDetailsServiceImpl userDetailsServiceImpl) {
+        return userDetailsServiceImpl;
     }
 
 	@Bean
