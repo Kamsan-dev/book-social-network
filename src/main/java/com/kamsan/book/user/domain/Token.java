@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UuidGenerator;
 
 import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
 
@@ -30,11 +31,13 @@ public class Token extends AbstractAuditingEntity<Long> {
 	@Id
 	@GeneratedValue
 	private Long id;
-	private String token;
+	private String code;
 	@Column(name = "expires_at", nullable = false)
 	private OffsetDateTime expiresAt;
 	@Column(name = "validated_at", nullable = true)
 	private OffsetDateTime validatedAt;
+	@Column(name ="verification_token", unique= true)
+	private String verificationToken;
 	
 	@ManyToOne	
 	@JoinColumn(name = "user_id", nullable = false)

@@ -8,5 +8,7 @@ import com.kamsan.book.user.domain.Token;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
 
-	Optional<Token> findByToken(String token);
+	Optional<Token> findByCode(String code);
+	
+	Optional<Token> findByVerificationToken(String token);
 }

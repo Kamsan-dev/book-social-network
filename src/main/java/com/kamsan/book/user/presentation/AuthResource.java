@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kamsan.book.user.application.dto.AccountValidationCodeDTO;
+import com.kamsan.book.user.application.dto.ReadUserDTO;
 import com.kamsan.book.user.application.dto.RegisterUserDTO;
 import com.kamsan.book.user.application.service.UserService;
 
@@ -28,6 +30,11 @@ public class AuthResource {
 	public ResponseEntity<?> register(@RequestBody @Valid RegisterUserDTO registerUserDTO){
 		userService.register(registerUserDTO);
 		return ResponseEntity.accepted().build();
+	}
+	
+	@PostMapping("account-validation")
+	public ResponseEntity<ReadUserDTO> accountValidation(@RequestBody @Valid AccountValidationCodeDTO dto){
+		return ResponseEntity.ok(userService.enableUserAccount(dto));
 	}
 
 }

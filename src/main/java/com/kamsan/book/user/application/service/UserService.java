@@ -1,24 +1,20 @@
 package com.kamsan.book.user.application.service;
 
-import java.security.SecureRandom;
-import java.time.OffsetDateTime;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kamsan.book.email.EmailService;
-import com.kamsan.book.email.EmailTemplateName;
 import com.kamsan.book.sharedkernel.exception.ApiException;
+import com.kamsan.book.user.application.dto.ReadUserDTO;
 import com.kamsan.book.user.application.dto.RegisterUserDTO;
+import com.kamsan.book.user.application.dto.AccountValidationCodeDTO;
 import com.kamsan.book.user.domain.Role;
-import com.kamsan.book.user.domain.Token;
 import com.kamsan.book.user.domain.User;
 import com.kamsan.book.user.mapper.UserMapper;
 import com.kamsan.book.user.repository.RoleRepository;
-import com.kamsan.book.user.repository.TokenRepository;
 import com.kamsan.book.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,14 +27,16 @@ public class UserService {
 	private final UserMapper userMapper;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final TokenRepository tokenRepository;
 	private final EmailService emailService;
-	
-	@Value("${application.mailing.frontend.activation-account-url}")
-	private String confirmationUrl;
+	private final TokenService tokenService;
 
 	@Transactional
 	public void register(RegisterUserDTO registerUserDTO) {
+		
+		String email = registerUserDTO.getEmail();
+		if (userRepository.findByEmail(email).isPresent()) {
+		    throw new ApiException("Email address is already taken");
+		}
 
 		Role userRole = roleRepository.findByName("USER").orElseThrow(
 				() -> new ApiException(String.format("Could not find any role matching the name %s", "USER")));
@@ -49,43 +47,23 @@ public class UserService {
 		newUser.setRoles(Set.of(userRole));
 		newUser.setPassword(passwordEncoder.encode(registerUserDTO.getPassword()));
 		userRepository.save(newUser);
-
-		sendValidationEmail(newUser);
+		
+		emailService.sendAccountValidationEmail(newUser);
 	}
 	
-	private void sendValidationEmail(User user) {
-		final String token = generateAndSaveActivationToken(user);
-		emailService.sendEmail(
-				user.getUsername(), 
-				user.getFullName(), 
-				EmailTemplateName.ACTIVATE_ACCOUNT, 
-				confirmationUrl, 
-				token, 
-				"Account Activation");
-	}
-
-	private String generateAndSaveActivationToken(User user) {
-		String generatedToken = generateActivationCode(6);
-		Token token = Token
-				.builder()
-				.user(user)
-				.token(generatedToken)
-				.expiresAt(OffsetDateTime.now().plusMinutes(15)).build();
-		
-		tokenRepository.save(token);
-		return generatedToken;
-		
-	}
-
-	private String generateActivationCode(int length) {
-		String characters = "0123456789";
-		StringBuilder sb = new StringBuilder();
-		SecureRandom sr = new SecureRandom();
-		for (int i = 0; i < length; i++) {
-			int randomIndex = sr.nextInt(characters.length());
-			sb.append(characters.charAt(randomIndex));
+	@Transactional
+	public ReadUserDTO enableUserAccount(AccountValidationCodeDTO dto) {
+		ReadUserDTO userDTO = tokenService.isVerificationAccountTokenValid(dto.verificationToken(), dto.code());	
+		// Account already enabled
+		if (userDTO.enabled()) {
+			return userDTO;
+		} else {
+			User user = userRepository.findByEmail(userDTO.email())
+					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", userDTO.email())));
+			
+			user.setEnabled(true);
+			userRepository.save(user);
+			return userMapper.userToReadUserDTO(user);
 		}
-		return sb.toString();
 	}
-
 }

@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.kamsan.book.sharedkernel.exception.ApiException;
+import com.kamsan.book.user.application.service.TokenService;
+import com.kamsan.book.user.domain.User;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -24,9 +27,13 @@ public class EmailService {
 
 	private final JavaMailSender mailSender;
 	private final SpringTemplateEngine templateEngine;
+	private final TokenService tokenService;
+	
+	@Value("${application.mailing.frontend.activation-account-url}")
+	private String confirmationUrl;
 
 	@Async
-	public void sendEmail(String to, String username, EmailTemplateName emailTemplate, String confirmationUrl,
+	private void sendEmail(String to, String username, EmailTemplateName emailTemplate, String confirmationUrl,
 			String activationCode, String subject) {
 
 		String templateName;
@@ -61,6 +68,18 @@ public class EmailService {
 		} catch (MessagingException e) {
 			throw new ApiException(String.format("Unable to send an email. %s", e.getMessage()));
 		}
+	}
+	
+	public void sendAccountValidationEmail(User user) {
+		Map<String, String> code_token = tokenService.generateAndSaveActivationCode(user);
+		confirmationUrl += String.format("?code=%s", code_token.get("token"));
+	this.sendEmail(
+				user.getUsername(), 
+				user.getFullName(), 
+				EmailTemplateName.ACTIVATE_ACCOUNT, 
+				confirmationUrl, 
+				code_token.get("code"), 
+				"Account Activation");
 	}
 
 }
