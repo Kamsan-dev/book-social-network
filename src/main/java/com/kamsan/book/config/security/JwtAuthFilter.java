@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kamsan.book.user.application.service.UserDetailsServiceImpl;
-import com.kamsan.book.user.application.service.UserService;
+import com.kamsan.book.user.application.service.AuthenticationService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

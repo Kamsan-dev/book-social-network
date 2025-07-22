@@ -52,7 +52,7 @@ public class TokenService {
 		return sb.toString();
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	public ReadUserDTO isVerificationAccountTokenValid(String verificationToken, String code) {
 		Token token = tokenRepository.findByVerificationToken(verificationToken)
 				.orElseThrow(() -> new ApiException(String.format("Token %s is not valid", verificationToken)));
@@ -64,7 +64,8 @@ public class TokenService {
 		if (token.getExpiresAt().isBefore(OffsetDateTime.now())) {
 			throw new ApiException("This code has expired");
 		}
-		
+		token.setValidatedAt(OffsetDateTime.now());
+		tokenRepository.save(token);
 		return userMapper.userToReadUserDTO(token.getUser());
 	}
 

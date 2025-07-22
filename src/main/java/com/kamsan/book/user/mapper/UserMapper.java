@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.kamsan.book.user.application.dto.ReadUserDTO;
-import com.kamsan.book.user.application.dto.RegisterUserDTO;
+import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
 import com.kamsan.book.user.domain.User;
 
 @Mapper(componentModel = "spring")

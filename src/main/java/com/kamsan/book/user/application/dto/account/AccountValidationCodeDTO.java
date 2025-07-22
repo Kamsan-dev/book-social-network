@@ -1,4 +1,4 @@
-package com.kamsan.book.user.application.dto;
+package com.kamsan.book.user.application.dto.account;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
