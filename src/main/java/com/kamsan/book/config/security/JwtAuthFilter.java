@@ -3,6 +3,7 @@ package com.kamsan.book.config.security;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kamsan.book.user.application.service.UserDetailsServiceImpl;
-import com.kamsan.book.user.application.service.AuthenticationService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,14 +35,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		String path = request.getRequestURI();
-		log.info(path);
 		if (WHITELIST.stream().anyMatch(path::startsWith)) {
 			log.info("whitelist reached");
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		final String authHeader = request.getHeader("Authorization");
+		final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 		final String jwt;
 		final String userEmail;
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {

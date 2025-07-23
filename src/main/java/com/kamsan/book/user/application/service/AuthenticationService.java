@@ -1,18 +1,25 @@
 package com.kamsan.book.user.application.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.exc.StreamWriteException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kamsan.book.config.security.JwtService;
 import com.kamsan.book.email.EmailService;
 import com.kamsan.book.sharedkernel.exception.ApiException;
@@ -28,6 +35,8 @@ import com.kamsan.book.user.mapper.UserMapper;
 import com.kamsan.book.user.repository.RoleRepository;
 import com.kamsan.book.user.repository.UserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +53,7 @@ public class AuthenticationService {
 	private final TokenService tokenService;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
+
 
 	@Transactional
 	public void register(RegisterUserDTO registerUserDTO) {
@@ -70,12 +80,14 @@ public class AuthenticationService {
 	public TokenValidationDTO enableUserAccount(AccountValidationCodeDTO dto) {
 		TokenValidationDTO isTokenValid = tokenService.isVerificationAccountTokenValid(dto.verificationToken(), dto.code());
 		ReadUserDTO userToEnable = isTokenValid.getUser();
+		// we enable the user if it is not already the case
 		if (userToEnable != null && !userToEnable.enabled()) {
 			User user = userRepository.findByEmail(userToEnable.email())
 					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", userToEnable.email())));
 			
 			user.setEnabled(true);
 			userRepository.save(user);
+			isTokenValid.setUser(userMapper.userToReadUserDTO(user));
 		}
 		return isTokenValid;
 	}
@@ -120,5 +132,36 @@ public class AuthenticationService {
 			throw new ApiException("Something went wrong with your session. Please loggin again.");
 		}
 		return userMapper.userToReadUserDTO(userOpt.get());
+	}
+
+	@Transactional(readOnly = true)
+	public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		final String refreshToken;
+		final String userEmail;
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			return;
+		}
+		refreshToken = authHeader.substring(7);
+		userEmail = jwtService.extractUsername(refreshToken);
+		if (userEmail != null) {
+			User user = userRepository.findByEmail(userEmail)
+					.orElseThrow(
+							() -> new ApiException(
+									String.format("Could not find user with email address %s", 
+											userEmail)));
+			if (jwtService.isTokenValid(refreshToken, user)) {
+		        HashMap<String, Object> claims = new HashMap<>();
+		        claims.put("fullName", user.getFullName());
+				String accessToken = jwtService.createAccessToken(claims, user);
+				AuthenticationSuccessDTO authResponse = new AuthenticationSuccessDTO(
+						accessToken, 
+						refreshToken,
+						userMapper.userToReadUserDTO(user));
+				
+				new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+			}
+		}
 	}
 }
