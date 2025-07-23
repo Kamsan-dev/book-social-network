@@ -27,13 +27,9 @@ public class EmailService {
 
 	private final JavaMailSender mailSender;
 	private final SpringTemplateEngine templateEngine;
-	private final TokenService tokenService;
-	
-	@Value("${application.mailing.frontend.activation-account-url}")
-	private String confirmationUrl;
 
 	@Async
-	private void sendEmail(String to, String username, EmailTemplateName emailTemplate, String confirmationUrl,
+	public void sendEmail(String to, String username, EmailTemplateName emailTemplate, String confirmationUrl,
 			String activationCode, String subject) {
 
 		String templateName;
@@ -68,18 +64,6 @@ public class EmailService {
 		} catch (MessagingException e) {
 			throw new ApiException(String.format("Unable to send an email. %s", e.getMessage()));
 		}
-	}
-	
-	public void sendAccountValidationEmail(User user) {
-		Map<String, String> code_token = tokenService.generateAndSaveActivationCode(user);
-		confirmationUrl += String.format("?code=%s", code_token.get("token"));
-	this.sendEmail(
-				user.getUsername(), 
-				user.getFullName(), 
-				EmailTemplateName.ACTIVATE_ACCOUNT, 
-				confirmationUrl, 
-				code_token.get("code"), 
-				"Account Activation");
 	}
 
 }

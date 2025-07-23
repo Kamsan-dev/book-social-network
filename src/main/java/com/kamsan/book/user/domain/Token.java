@@ -11,9 +11,11 @@ import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +31,8 @@ import lombok.Setter;
 public class Token extends AbstractAuditingEntity<Long> {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tokenSequenceGenerator")
+	@SequenceGenerator(name = "tokenSequenceGenerator", sequenceName = "token_generator", allocationSize = 1)
 	private Long id;
 	private String code;
 	@Column(name = "expires_at", nullable = false)

@@ -21,6 +21,7 @@ import com.kamsan.book.user.application.dto.account.AccountValidationCodeDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationFormDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationSuccessDTO;
 import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
+import com.kamsan.book.user.application.dto.account.TokenValidationDTO;
 import com.kamsan.book.user.domain.Role;
 import com.kamsan.book.user.domain.User;
 import com.kamsan.book.user.mapper.UserMapper;
@@ -62,25 +63,24 @@ public class AuthenticationService {
 		newUser.setPassword(passwordEncoder.encode(registerUserDTO.getPassword()));
 		userRepository.save(newUser);
 		
-		emailService.sendAccountValidationEmail(newUser);
+		tokenService.sendAccountValidationEmail(newUser);
 	}
 	
 	@Transactional
-	public ReadUserDTO enableUserAccount(AccountValidationCodeDTO dto) {
-		ReadUserDTO userDTO = tokenService.isVerificationAccountTokenValid(dto.verificationToken(), dto.code());	
-		// Account already enabled
-		if (userDTO.enabled()) {
-			return userDTO;
-		} else {
-			User user = userRepository.findByEmail(userDTO.email())
-					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", userDTO.email())));
+	public TokenValidationDTO enableUserAccount(AccountValidationCodeDTO dto) {
+		TokenValidationDTO isTokenValid = tokenService.isVerificationAccountTokenValid(dto.verificationToken(), dto.code());
+		ReadUserDTO userToEnable = isTokenValid.getUser();
+		if (userToEnable != null && !userToEnable.enabled()) {
+			User user = userRepository.findByEmail(userToEnable.email())
+					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", userToEnable.email())));
 			
 			user.setEnabled(true);
 			userRepository.save(user);
-			return userMapper.userToReadUserDTO(user);
 		}
+		return isTokenValid;
 	}
 	
+	@Transactional(readOnly = true)
 	public AuthenticationSuccessDTO authenticateUser(AuthenticationFormDTO dto) {
 		log.info(dto.email());
 			User user = userRepository.findByEmail(dto.email())

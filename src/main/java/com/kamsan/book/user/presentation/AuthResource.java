@@ -14,6 +14,7 @@ import com.kamsan.book.user.application.dto.account.AccountValidationCodeDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationFormDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationSuccessDTO;
 import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
+import com.kamsan.book.user.application.dto.account.TokenValidationDTO;
 import com.kamsan.book.user.application.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,8 +37,10 @@ public class AuthResource {
 	}
 	
 	@PostMapping("account-validation")
-	public ResponseEntity<ReadUserDTO> accountValidation(@RequestBody @Valid AccountValidationCodeDTO dto){
-		return ResponseEntity.ok(userService.enableUserAccount(dto));
+	public ResponseEntity<TokenValidationDTO> accountValidation(@RequestBody @Valid AccountValidationCodeDTO dto){
+		TokenValidationDTO response = userService.enableUserAccount(dto);
+		HttpStatus status = (response.isValid()) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+		return new ResponseEntity<>(response, status);
 	}
 	
 	@PostMapping("authenticate")
