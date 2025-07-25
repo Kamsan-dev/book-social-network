@@ -29,9 +29,12 @@ import com.kamsan.book.user.application.dto.account.AuthenticationFormDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationSuccessDTO;
 import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
 import com.kamsan.book.user.application.dto.account.TokenValidationDTO;
+import com.kamsan.book.user.domain.AccessToken;
 import com.kamsan.book.user.domain.Role;
 import com.kamsan.book.user.domain.User;
+import com.kamsan.book.user.enums.TokenType;
 import com.kamsan.book.user.mapper.UserMapper;
+import com.kamsan.book.user.repository.AccessTokenRepository;
 import com.kamsan.book.user.repository.RoleRepository;
 import com.kamsan.book.user.repository.UserRepository;
 
@@ -49,10 +52,10 @@ public class AuthenticationService {
 	private final UserMapper userMapper;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final EmailService emailService;
 	private final TokenService tokenService;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
+	private final AccessTokenRepository accessTokenRepository;
 
 
 	@Transactional
@@ -92,7 +95,7 @@ public class AuthenticationService {
 		return isTokenValid;
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	public AuthenticationSuccessDTO authenticateUser(AuthenticationFormDTO dto) {
 		log.info(dto.email());
 			User user = userRepository.findByEmail(dto.email())
@@ -109,6 +112,10 @@ public class AuthenticationService {
 			
 			String accessToken = jwtService.createAccessToken(claims, user);
 			String refreshToken = jwtService.createRefreshToken(user);
+			
+			revokeAllUserTokens(user);
+			saveUserAccessToken(user, accessToken);
+			
 			return new AuthenticationSuccessDTO(
 					accessToken, 
 					refreshToken,
@@ -155,6 +162,10 @@ public class AuthenticationService {
 		        HashMap<String, Object> claims = new HashMap<>();
 		        claims.put("fullName", user.getFullName());
 				String accessToken = jwtService.createAccessToken(claims, user);
+				
+				revokeAllUserTokens(user);
+				saveUserAccessToken(user, accessToken);
+				
 				AuthenticationSuccessDTO authResponse = new AuthenticationSuccessDTO(
 						accessToken, 
 						refreshToken,
@@ -163,5 +174,26 @@ public class AuthenticationService {
 				new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
 			}
 		}
+	}
+	
+	private void saveUserAccessToken(User user, String accessToken) {
+		AccessToken newAccessToken = new AccessToken().builder()
+									.token(accessToken)
+									.expired(false)
+									.revoked(false)
+									.tokenType(TokenType.BEARER)
+									.user(user)
+									.build();
+		accessTokenRepository.save(newAccessToken);
+	}
+	
+	
+	private void revokeAllUserTokens(User user) {
+		Set<AccessToken> allAccessTokens = accessTokenRepository.findAllValidAccessTokens(user.getPublicId());
+		allAccessTokens.forEach(t -> {
+			t.setRevoked(true);
+			t.setExpired(true);
+		});
+		accessTokenRepository.saveAll(allAccessTokens);
 	}
 }

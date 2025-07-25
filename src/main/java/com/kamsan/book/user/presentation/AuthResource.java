@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamsan.book.user.application.dto.ReadUserDTO;
 import com.kamsan.book.user.application.dto.account.AccountValidationCodeDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationFormDTO;
 import com.kamsan.book.user.application.dto.account.AuthenticationSuccessDTO;
@@ -26,7 +25,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 public class AuthResource {

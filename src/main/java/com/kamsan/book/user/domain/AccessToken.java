@@ -1,21 +1,22 @@
 package com.kamsan.book.user.domain;
 
-import java.time.OffsetDateTime;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
+import com.kamsan.book.user.enums.TokenType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,24 +28,43 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "access_token")
 @Builder
-public class Token extends AbstractAuditingEntity<Long> {
+public class AccessToken extends AbstractAuditingEntity<Long> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tokenSequenceGenerator")
-	@SequenceGenerator(name = "tokenSequenceGenerator", sequenceName = "token_generator", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String code;
-	@Column(name = "expires_at", nullable = false)
-	private OffsetDateTime expiresAt;
-	@Column(name = "validated_at", nullable = true)
-	private OffsetDateTime validatedAt;
-	@Column(name = "verification_token", unique = true)
-	private String verificationToken;
+	
+	@Column(name = "token", nullable = false)
+	private String token;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "token_type")
+	private TokenType tokenType;
+	
+	@Column(name = "is_expired")
+	private boolean expired;
+	
+	@Column(name = "is_revoked")
+	private boolean revoked;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private User user;
+	
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (o == null || getClass() != o.getClass()) return false;
+	    AccessToken that = (AccessToken) o;
+	    return id != null && id.equals(that.id);
+	}
+
+	@Override
+	public int hashCode() {
+	    return getClass().hashCode();
+	}
 
 }

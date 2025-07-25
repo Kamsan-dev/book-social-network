@@ -35,6 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		String path = request.getRequestURI();
+		log.info("path reached : {}", path);
 		if (WHITELIST.stream().anyMatch(path::startsWith)) {
 			log.info("whitelist reached");
 			filterChain.doFilter(request, response);
@@ -51,7 +52,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 		jwt = authHeader.substring(7);
 		userEmail = jwtService.extractUsername(jwt);
-		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() != null) {
+		log.info("userEmail: {}", userEmail);
+		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(userEmail);
 			if (jwtService.isTokenValid(jwt, userDetails)) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,

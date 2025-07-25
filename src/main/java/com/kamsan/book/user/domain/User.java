@@ -73,6 +73,11 @@ public class User extends AbstractAuditingEntity<Long> implements UserDetails, P
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 	
+	// User Access Tokens
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<AccessToken> accessTokens = new HashSet<>();
+	
+	// Token account validation
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Token> tokens = new ArrayList<>();
 
