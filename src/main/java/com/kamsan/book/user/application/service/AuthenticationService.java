@@ -97,7 +97,6 @@ public class AuthenticationService {
 	
 	@Transactional
 	public AuthenticationSuccessDTO authenticateUser(AuthenticationFormDTO dto) {
-		log.info(dto.email());
 			User user = userRepository.findByEmail(dto.email())
 					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", dto.email())));
 			

@@ -47,7 +47,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> 
         			req.requestMatchers(
-                        "/api/v1/auth/**",
+                        "/auth/**",
                         "/v2/api-docs",
                         "/v3/api-docs",
                         "/v3/api-docs/**",
@@ -63,7 +63,7 @@ public class SecurityConfig {
             .exceptionHandling(eh -> eh.accessDeniedHandler(customAccessDeniedHandler))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .logout(logout ->
-            	logout.logoutUrl("/api/v1/logout")
+            	logout.logoutUrl("/logout")
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> {
                     log.info("Logout success handler invoked. Authentication: {}", authentication);
