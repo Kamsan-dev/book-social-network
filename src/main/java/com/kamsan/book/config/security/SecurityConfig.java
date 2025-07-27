@@ -13,11 +13,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import com.kamsan.book.config.handler.CustomAccessDeniedHandler;
+import com.kamsan.book.config.handler.CustomAuthenticationEntryPoint;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class SecurityConfig {
 	private final UserDetailsService userDetailsService;
 	private final LogoutHandler logoutHandler;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 
     @Bean
@@ -60,14 +63,15 @@ public class SecurityConfig {
                         "/swagger-ui.html").permitAll()
                     .anyRequest().authenticated())
             .userDetailsService(userDetailsService)
-            .exceptionHandling(eh -> eh.accessDeniedHandler(customAccessDeniedHandler))
+            .exceptionHandling(eh -> 
+            			eh.accessDeniedHandler(customAccessDeniedHandler)
+            			.authenticationEntryPoint(customAuthenticationEntryPoint))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .logout(logout ->
             	logout.logoutUrl("/logout")
                 .addLogoutHandler(logoutHandler)
+                .clearAuthentication(true)
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    log.info("Logout success handler invoked. Authentication: {}", authentication);
-                    SecurityContextHolder.clearContext();
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write("Logout successful");
                 }));
