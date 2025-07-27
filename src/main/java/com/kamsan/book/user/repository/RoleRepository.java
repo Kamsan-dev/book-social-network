@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.kamsan.book.user.domain.Role;
+import com.kamsan.book.user.enums.RoleType;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>{
 	
-	Optional<Role> findByName(String role);
+	Optional<Role> findByName(RoleType role);
 
 }

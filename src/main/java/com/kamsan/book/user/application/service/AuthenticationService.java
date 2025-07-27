@@ -2,6 +2,7 @@ package com.kamsan.book.user.application.service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,6 +33,8 @@ import com.kamsan.book.user.application.dto.account.TokenValidationDTO;
 import com.kamsan.book.user.domain.AccessToken;
 import com.kamsan.book.user.domain.Role;
 import com.kamsan.book.user.domain.User;
+import com.kamsan.book.user.enums.PermissionType;
+import com.kamsan.book.user.enums.RoleType;
 import com.kamsan.book.user.enums.TokenType;
 import com.kamsan.book.user.mapper.UserMapper;
 import com.kamsan.book.user.repository.AccessTokenRepository;
@@ -56,6 +59,7 @@ public class AuthenticationService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
 	private final AccessTokenRepository accessTokenRepository;
+	private static final String USER_NOT_FOUND_MSG = "Could not find user with email address %s";
 
 
 	@Transactional
@@ -66,7 +70,7 @@ public class AuthenticationService {
 		    throw new ApiException("Email address is already taken");
 		}
 
-		Role userRole = roleRepository.findByName("USER").orElseThrow(
+		Role userRole = roleRepository.findByName(RoleType.ROLE_MANAGER).orElseThrow(
 				() -> new ApiException(String.format("Could not find any role matching the name %s", "USER")));
 
 		User newUser = userMapper.registerUserDTOToUser(registerUserDTO);
@@ -86,7 +90,7 @@ public class AuthenticationService {
 		// we enable the user if it is not already the case
 		if (userToEnable != null && !userToEnable.enabled()) {
 			User user = userRepository.findByEmail(userToEnable.email())
-					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", userToEnable.email())));
+					.orElseThrow(() -> new ApiException(String.format(USER_NOT_FOUND_MSG, userToEnable.email())));
 			
 			user.setEnabled(true);
 			userRepository.save(user);
@@ -98,7 +102,7 @@ public class AuthenticationService {
 	@Transactional
 	public AuthenticationSuccessDTO authenticateUser(AuthenticationFormDTO dto) {
 			User user = userRepository.findByEmail(dto.email())
-					.orElseThrow(() -> new ApiException(String.format("Could not find user with email address %s", dto.email())));
+					.orElseThrow(() -> new ApiException(String.format(USER_NOT_FOUND_MSG, dto.email())));
 			
 			try {
 			Authentication authenticate = authenticationManager
@@ -155,7 +159,7 @@ public class AuthenticationService {
 			User user = userRepository.findByEmail(userEmail)
 					.orElseThrow(
 							() -> new ApiException(
-									String.format("Could not find user with email address %s", 
+									String.format(USER_NOT_FOUND_MSG, 
 											userEmail)));
 			if (jwtService.isTokenValid(refreshToken, user)) {
 		        HashMap<String, Object> claims = new HashMap<>();

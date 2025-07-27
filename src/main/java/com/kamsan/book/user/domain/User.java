@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
+import com.kamsan.book.user.enums.RoleType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -70,7 +71,11 @@ public class User extends AbstractAuditingEntity<Long> implements UserDetails, P
 	private boolean enabled;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(
+			name = "user_roles", 
+			joinColumns = @JoinColumn(name = "user_id"), 
+			inverseJoinColumns = @JoinColumn(name = "role_id")
+	)
 	private Set<Role> roles = new HashSet<>();
 	
 	// User Access Tokens
@@ -88,10 +93,14 @@ public class User extends AbstractAuditingEntity<Long> implements UserDetails, P
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.roles
-				.stream()
-				.map(r -> new SimpleGrantedAuthority(r.getName()))
-				.toList();
+		
+		List<SimpleGrantedAuthority> authorities = new ArrayList<>(this.roles.stream()
+			    .flatMap(role -> role.getName().getPermissions().stream())
+			    .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+			    .toList());
+		
+		authorities.addAll(this.roles.stream().map(r -> new SimpleGrantedAuthority(r.getName().toString())).toList());
+		return authorities;
 	}
 
 	@Override

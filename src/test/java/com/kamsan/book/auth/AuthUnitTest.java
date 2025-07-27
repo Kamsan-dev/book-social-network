@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,7 +71,9 @@ class AuthUnitTest {
             "john.doe@example.com",
             "https://example.com/avatar.jpg",
             false,
-            false
+            false,
+            new ArrayList<>(),
+            new ArrayList<>()
         );
         
         ReadUserDTO updatedUserDTO = new ReadUserDTO(
@@ -80,7 +83,9 @@ class AuthUnitTest {
                 "john.doe@example.com",
                 "https://example.com/avatar.jpg",
                 false,
-                true
+                true,
+                new ArrayList<>(),
+                new ArrayList<>()
            );
 
         when(tokenService.isVerificationAccountTokenValid(token, code))
@@ -97,6 +102,7 @@ class AuthUnitTest {
 
         // Assert
         verify(tokenService).isVerificationAccountTokenValid(token, code);
+        verify(userRepository).findByEmail(user.getEmail());
         verify(userRepository).save(user);
         assertNotNull(result.getUser());
         assertTrue(result.getUser().enabled());
@@ -121,7 +127,9 @@ class AuthUnitTest {
             "john.doe@example.com",
             "https://example.com/avatar.jpg",
             false,
-            true
+            true,
+            new ArrayList<>(),
+            new ArrayList<>()
         );
         
         ReadUserDTO updatedUserDTO = new ReadUserDTO(
@@ -131,7 +139,9 @@ class AuthUnitTest {
                 "john.doe@example.com",
                 "https://example.com/avatar.jpg",
                 false,
-                true
+                true,
+                new ArrayList<>(),
+                new ArrayList<>()
            );
 
         when(tokenService.isVerificationAccountTokenValid(token, code))

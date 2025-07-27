@@ -36,7 +36,7 @@ public class AccessToken extends AbstractAuditingEntity<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "token", nullable = false)
+	@Column(name = "token", nullable = false, columnDefinition = "TEXT")
 	private String token;
 	
 	@Enumerated(EnumType.STRING)
