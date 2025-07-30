@@ -145,7 +145,7 @@ public class AuthenticationService {
 	}
 
 	@Transactional(readOnly = true)
-	public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
 		
 		final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 		final String refreshToken;
@@ -173,14 +173,19 @@ public class AuthenticationService {
 						accessToken, 
 						refreshToken,
 						userMapper.userToReadUserDTO(user));
-				
-				new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+			
+				try {
+					new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+				} catch (IOException e) {
+					throw new ApiException(
+							String.format("Something went wrong when creating a new access token. %s", e.getMessage()));
+				}
 			}
 		}
 	}
 	
 	private void saveUserAccessToken(User user, String accessToken) {
-		AccessToken newAccessToken = new AccessToken().builder()
+		AccessToken newAccessToken = AccessToken.builder()
 									.token(accessToken)
 									.expired(false)
 									.revoked(false)

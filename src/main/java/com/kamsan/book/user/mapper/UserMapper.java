@@ -36,7 +36,7 @@ public interface UserMapper {
 	
 	
     default List<String> mapAuthorities(User user) {
-        if (user == null || user.getRoles().isEmpty() || user.getRoles() == null) return Collections.emptyList();
+        if (user == null || user.getRoles().isEmpty()) return Collections.emptyList();
         
         return user.getRoles().stream()
             .flatMap(role -> role.getName().getPermissions().stream())
