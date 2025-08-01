@@ -1,21 +1,14 @@
 package com.kamsan.book.user.mapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import com.kamsan.book.user.application.dto.ReadUserDTO;
 import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
-import com.kamsan.book.user.domain.Role;
 import com.kamsan.book.user.domain.User;
 import com.kamsan.book.user.enums.PermissionType;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -27,7 +20,7 @@ public interface UserMapper {
 	@Mapping(target="accountLocked", ignore = true)
 	@Mapping(target="enabled", ignore = true)
 	@Mapping(target="id", ignore = true)
-	@Mapping(target="imageUrl", ignore = true)
+	@Mapping(target="profileImageId", ignore = true)
 	@Mapping(target="publicId", ignore = true)
 	@Mapping(target="roles", ignore = true)
 	@Mapping(target="tokens", ignore = true)

@@ -1,41 +1,15 @@
 package com.kamsan.book.user.domain;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.kamsan.book.sharedkernel.domain.AbstractAuditingEntity;
-import com.kamsan.book.user.enums.RoleType;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import java.security.Principal;
+import java.util.*;
 
 @Getter
 @Setter
@@ -58,8 +32,8 @@ public class User extends AbstractAuditingEntity<Long> implements UserDetails, P
 	private String lastName;
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
-	@Column(name = "image_url")
-	private String imageUrl = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+	@Column(name = "profile_image_id", unique = true)
+	private String profileImageId;
 	@UuidGenerator
 	@Column(name = "public_id", nullable = false, unique = true)
 	private UUID publicId;
@@ -137,4 +111,31 @@ public class User extends AbstractAuditingEntity<Long> implements UserDetails, P
 		return this.firstName + " " + this.lastName;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		User user = (User) o;
+		return Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(publicId, user.publicId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), id, email, publicId);
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"roles=" + roles +
+				", enabled=" + enabled +
+				", accountLocked=" + accountLocked +
+				", publicId=" + publicId +
+				", profile_image_id='" + profileImageId + '\'' +
+				", email='" + email + '\'' +
+				", lastName='" + lastName + '\'' +
+				", firstName='" + firstName + '\'' +
+				", id=" + id +
+				'}';
+	}
 }

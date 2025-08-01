@@ -24,78 +24,78 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtService {
 
-	public static final long ACCESS_TOKEN_EXPIRATION_TIME = 1_800_800; // 432_000_000;
-	// 5 days expiration
-	public static final long REFRESH_TOKEN_EXPIRATION_TIME = 432_000_000;
+    public static final long ACCESS_TOKEN_EXPIRATION_TIME = 1_800_800; // 432_000_000;
+    // 5 days expiration
+    public static final long REFRESH_TOKEN_EXPIRATION_TIME = 432_000_000;
 
-	private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
+    private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
-	private final AccessTokenRepository accessTokenRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
-	public String extractUsername(String token) {
-		return extractClaim(token, Claims::getSubject);
-	}
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
-	public <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
-		final Claims claims = extractAllClaims(token);
-		return claimResolver.apply(claims);
-	}
+    public <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
 
-	public String createAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-		return generateToken(extraClaims, userDetails, true);
-	}
+    public String createAccessToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return generateToken(extraClaims, userDetails, true);
+    }
 
-	public String createRefreshToken(UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails, false);
-	}
+    public String createRefreshToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails, false);
+    }
 
-	private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, boolean isAccessToken) {
-		long expiration = isAccessToken ? ACCESS_TOKEN_EXPIRATION_TIME : REFRESH_TOKEN_EXPIRATION_TIME;
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, boolean isAccessToken) {
+        long expiration = isAccessToken ? ACCESS_TOKEN_EXPIRATION_TIME : REFRESH_TOKEN_EXPIRATION_TIME;
 
-		Map<String, Object> claims = new HashMap<>();
-		if (isAccessToken) {
-			claims.putAll(claimsWithAuthorities(userDetails));
-			claims.putAll(extraClaims);
-		}
-		return buildToken(claims, userDetails, expiration);
-	}
+        Map<String, Object> claims = new HashMap<>();
+        if (isAccessToken) {
+            claims.putAll(claimsWithAuthorities(userDetails));
+            claims.putAll(extraClaims);
+        }
+        return buildToken(claims, userDetails, expiration);
+    }
 
-	private Map<String, Object> claimsWithAuthorities(UserDetails userDetails) {
-		List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+    private Map<String, Object> claimsWithAuthorities(UserDetails userDetails) {
+        List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-		Map<String, Object> claims = new HashMap<>();
-		claims.put("authorities", authorities);
-		return claims;
-	}
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("authorities", authorities);
+        return claims;
+    }
 
-	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails,
-			long accessTokenExpirationTime) {
-		return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
-				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime)).signWith(secretKey)
-				.compact();
-	}
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails,
+                              long accessTokenExpirationTime) {
+        return Jwts.builder().claims(extraClaims).subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime)).signWith(secretKey)
+                .compact();
+    }
 
-	public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
 
-		boolean isNotExpiredNorRevoked = accessTokenRepository.findByToken(token)
-				.map(t -> !t.isExpired() && !t.isRevoked())
-				.orElse(false);
+        boolean isNotExpiredNorRevoked = accessTokenRepository.findByToken(token)
+                .map(t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
 
-		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && isNotExpiredNorRevoked);
-	}
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && isNotExpiredNorRevoked);
+    }
 
-	private boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
-	}
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
 
-	private Date extractExpiration(String token) {
-		return extractClaim(token, Claims::getExpiration);
-	}
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
 
-	private Claims extractAllClaims(String token) {
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
-	}
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+    }
 
 }

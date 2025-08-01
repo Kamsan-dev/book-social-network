@@ -1,50 +1,39 @@
 package com.kamsan.book.user.application.service;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.exc.StreamWriteException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kamsan.book.config.security.JwtService;
-import com.kamsan.book.email.EmailService;
 import com.kamsan.book.sharedkernel.exception.ApiException;
 import com.kamsan.book.user.application.dto.ReadUserDTO;
-import com.kamsan.book.user.application.dto.account.AccountValidationCodeDTO;
-import com.kamsan.book.user.application.dto.account.AuthenticationFormDTO;
-import com.kamsan.book.user.application.dto.account.AuthenticationSuccessDTO;
-import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
-import com.kamsan.book.user.application.dto.account.TokenValidationDTO;
+import com.kamsan.book.user.application.dto.account.*;
 import com.kamsan.book.user.domain.AccessToken;
 import com.kamsan.book.user.domain.Role;
 import com.kamsan.book.user.domain.User;
-import com.kamsan.book.user.enums.PermissionType;
 import com.kamsan.book.user.enums.RoleType;
 import com.kamsan.book.user.enums.TokenType;
 import com.kamsan.book.user.mapper.UserMapper;
 import com.kamsan.book.user.repository.AccessTokenRepository;
 import com.kamsan.book.user.repository.RoleRepository;
 import com.kamsan.book.user.repository.UserRepository;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.kamsan.book.sharedkernel.utils.Constants.USER_NOT_FOUND_MSG;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +48,6 @@ public class AuthenticationService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
 	private final AccessTokenRepository accessTokenRepository;
-	private static final String USER_NOT_FOUND_MSG = "Could not find user with email address %s";
-
 
 	@Transactional
 	public void register(RegisterUserDTO registerUserDTO) {
@@ -70,7 +57,7 @@ public class AuthenticationService {
 		    throw new ApiException("Email address is already taken");
 		}
 
-		Role userRole = roleRepository.findByName(RoleType.ROLE_MANAGER).orElseThrow(
+		Role userRole = roleRepository.findByName(RoleType.ROLE_ADMIN).orElseThrow(
 				() -> new ApiException(String.format("Could not find any role matching the name %s", "USER")));
 
 		User newUser = userMapper.registerUserDTOToUser(registerUserDTO);
