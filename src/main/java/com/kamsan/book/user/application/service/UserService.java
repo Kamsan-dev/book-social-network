@@ -52,8 +52,8 @@ public class UserService {
     public byte[] getUserProfileImage(UUID userPublicId) {
         User user = userRepository.findByPublicId(userPublicId)
                 .orElseThrow(() -> new ApiException(String.format(Constants.USER_NOT_FOUND_MSG, userPublicId)));
-        if (user.getProfileImageId().isEmpty() || user.getProfileImageId() == null){
-            new ApiException(String.format("Could not retrieve the profile image of user %s", user.getPublicId()));
+        if (user.getProfileImageId() == null || user.getProfileImageId().isEmpty()){
+            throw new ApiException(String.format("Could not retrieve the profile image of user %s", user.getPublicId()));
         }
         return s3Service.getObject(buckets.getUsers(), "profile-images/%s/%s".formatted(user.getPublicId(), user.getProfileImageId()));
     }

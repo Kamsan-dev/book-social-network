@@ -1,24 +1,7 @@
 package com.kamsan.book.auth;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
+import com.kamsan.book.config.s3.S3Buckets;
+import com.kamsan.book.config.s3.S3Service;
 import com.kamsan.book.email.EmailService;
 import com.kamsan.book.user.application.dto.ReadUserDTO;
 import com.kamsan.book.user.application.dto.account.AccountValidationCodeDTO;
@@ -28,6 +11,22 @@ import com.kamsan.book.user.application.service.TokenService;
 import com.kamsan.book.user.domain.User;
 import com.kamsan.book.user.mapper.UserMapper;
 import com.kamsan.book.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -50,6 +49,11 @@ class AuthUnitTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private S3Service s3Service;
+    @Mock
+    private S3Buckets s3Buckets;
 
 
     @Test
@@ -163,5 +167,6 @@ class AuthUnitTest {
         assertNotNull(result.getUser());
         assertTrue(result.getUser().enabled());
     }
+
 
 }
