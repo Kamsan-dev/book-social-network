@@ -22,23 +22,23 @@ public class UserResouce {
     private final AuthenticationService authenticationService;
 
     @PostMapping(value = "profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadUserProfileImage(
+    public ResponseEntity<?> uploadUserProfileImage(
             @RequestParam(name = "file") MultipartFile file) {
         ReadUserDTO connectedUser = authenticationService.getAuthenticatedUserFromSecurityContext();
-        String newProfileImageUrl = userService.uploadUserProfileImage(file, connectedUser.publicId());
-        return new ResponseEntity<>(newProfileImageUrl, HttpStatus.OK);
+        userService.uploadUserProfileImage(file, connectedUser.publicId());
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "users/{userId}/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadUsersProfileImage(@PathVariable(name = "userId") UUID userPublicId,
-            @RequestParam(name = "file") MultipartFile file) {
-        String newProfileImageUrl = userService.uploadUserProfileImage(file, userPublicId);
-        return new ResponseEntity<>(newProfileImageUrl, HttpStatus.OK);
+    public ResponseEntity<?> uploadUsersProfileImage(@PathVariable(name = "userId") UUID userPublicId,
+                                                     @RequestParam(name = "file") MultipartFile file) {
+        userService.uploadUserProfileImage(file, userPublicId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "{userId}/profile-image", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getUserProfileImage(@PathVariable(name = "userId") UUID userPublicId){
-        return new ResponseEntity<>(userService.getUserProfileImage(userPublicId),  HttpStatus.OK);
+    public ResponseEntity<byte[]> getUserProfileImage(@PathVariable(name = "userId") UUID userPublicId) {
+        return new ResponseEntity<>(userService.getUserProfileImage(userPublicId), HttpStatus.OK);
     }
 }

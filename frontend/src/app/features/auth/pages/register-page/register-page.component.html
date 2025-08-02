@@ -1,0 +1,14 @@
+<div class="register-container">
+  <div class="register-form">
+    <app-register-form [loading]="loading()" (registerChange)="onRegister($event)"></app-register-form>
+    @if (registerSuccess()){
+    <span class="text-xl mt-4">We've sent you an email to enable your account.</span>
+    }
+  </div>
+  <div class="register-image">
+    <img
+      src="https://images.unsplash.com/photo-1693891220427-3d93bf7e134f?q=80&w=1546&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      alt="Register illustration"
+    />
+  </div>
+</div>

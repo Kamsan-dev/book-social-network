@@ -1,0 +1,109 @@
+<div class="form-container">
+  <h2>Register for an account</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmitRegister()">
+    <div class="form-group">
+      <label>First name</label>
+      <input
+        type="text"
+        placeholder="Jane"
+        formControlName="firstName"
+        class="p-inputtext"
+        [ngClass]="{ 'is-invalid': f['firstName'].invalid && f['firstName'].dirty }"
+      />
+      @if (f['firstName'].invalid && f['firstName'].dirty) {
+      <div class="invalid-feedback">
+        <div>Fullname is required</div>
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Last name</label>
+      <input type="text" placeholder="Smith" formControlName="lastName" class="p-inputtext" [ngClass]="{ 'is-invalid': f['lastName'].invalid && f['lastName'].dirty }" />
+      @if (f['lastName'].invalid && f['lastName'].dirty) {
+      <div class="invalid-feedback">
+        <div>Username is required</div>
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="text"
+        placeholder="jane-smith@gmail.com"
+        formControlName="email"
+        class="p-inputtext"
+        [ngClass]="{ 'is-invalid': f['email'].invalid && f['email'].dirty }"
+      />
+      @if (f['email'].invalid && f['email'].dirty) {
+      <div class="invalid-feedback">
+        <div>Email is required</div>
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        placeholder="Pick a secure password"
+        formControlName="password"
+        class="p-inputtext"
+        [ngClass]="{ 'is-invalid': f['password'].invalid && f['password'].dirty }"
+      />
+      @if (f['password'].invalid && f['password'].dirty) {
+      <div class="invalid-feedback">
+        @if (f['password'].errors!['required']) {
+        <div>Password is required</div>
+        } @if (f['password'].errors!['minlength']) {
+        <div>Password must be at least 8 characters</div>
+        }
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Confirm password</label>
+      <input
+        type="password"
+        placeholder="Confirm password"
+        formControlName="confirmPassword"
+        class="p-inputtext"
+        [ngClass]="{ 'is-invalid': f['confirmPassword'].invalid && f['confirmPassword'].dirty }"
+      />
+      @if (f['confirmPassword'].invalid && f['confirmPassword'].dirty) {
+      <div class="invalid-feedback">
+        @if (f['confirmPassword'].hasError('required')) {
+        <div>Password is required</div>
+        } @if (form.get('confirmPassword')?.hasError('matching')) {
+        <div>Passwords do not match</div>
+        }
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <div class="flex gap-2 items-center">
+        <input type="checkbox" formControlName="acceptTerms" class="p-checkbox" [ngClass]="{ 'is-invalid': f['acceptTerms'].invalid && f['acceptTerms'].dirty }" />
+        <label for="acceptTerms" class="text-sm label-no-mb">I have read and agree to the Terms</label>
+      </div>
+      @if (f['acceptTerms'].invalid && f['acceptTerms'].dirty) {
+      <div class="invalid-feedback">Accept Terms is required</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <p-button
+        type="submit"
+        label="Register"
+        [size]="'small'"
+        [severity]="'secondary'"
+        [disabled]="form.invalid || loading()"
+        [styleClass]="'w-[100%]'"
+        [loading]="loading()"
+      />
+    </div>
+    <a class="span-link" [routerLink]="['/signin']">have an account ? Sign in now.</a>
+  </form>
+</div>

@@ -26,7 +26,7 @@ public class UserService {
 
 
     @Transactional
-    public String uploadUserProfileImage(MultipartFile file, UUID userPublicId) {
+    public void uploadUserProfileImage(MultipartFile file, UUID userPublicId) {
         var profileImageId = UUID.randomUUID().toString();
         var s3Key = "profile-images/%s/%s".formatted(userPublicId, profileImageId);
         try {
@@ -43,9 +43,6 @@ public class UserService {
         if (success != 1) {
             throw new ApiException(String.format("Failed to update profile image of user with public id %s", userPublicId));
         }
-
-        // Construct the S3 URL
-        return String.format("https://%s.s3.eu-north-1.amazonaws.com/%s", buckets.getUsers(), s3Key);
     }
 
     @Transactional(readOnly = true)

@@ -54,17 +54,13 @@ public class UserServiceTest {
         // Mock userRepository to return success (1)
         when(userRepository.updateUserProfileImage(anyString(), eq(userPublicId))).thenReturn(1);
         // When
-        String url = userService.uploadUserProfileImage(multipartFile, userPublicId);
+        userService.uploadUserProfileImage(multipartFile, userPublicId);
 
         // Then
         ArgumentCaptor<String> profileImageIdCaptor = ArgumentCaptor.forClass(String.class);
         verify(userRepository).updateUserProfileImage(profileImageIdCaptor.capture(), eq(userPublicId));
         String expectedKey = "profile-images/%s/%s".formatted(userPublicId, profileImageIdCaptor.getValue());
         verify(s3Service).putObject(bucket, expectedKey, bytes, "text/plain");
-
-        // Optional: verify returned URL
-        String expectedUrl = "https://%s.s3.eu-north-1.amazonaws.com/%s".formatted(bucket, expectedKey);
-        assertEquals(expectedUrl, url);
     }
 
     @Test
