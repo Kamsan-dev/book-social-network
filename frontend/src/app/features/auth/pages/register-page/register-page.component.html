@@ -1,9 +1,15 @@
 <div class="register-container">
   <div class="register-form">
-    <app-register-form [loading]="loading()" (registerChange)="onRegister($event)"></app-register-form>
-    @if (registerSuccess()){
-    <span class="text-xl mt-4">We've sent you an email to enable your account.</span>
+    @if (registerSuccess() != null){
+    <div class="mb-4">
+      @if (registerSuccess()){
+      <span class="text-xl mt-4 text-green-500">We've sent you an email to enable your account.</span>
+      } @else if (!registerSuccess()){
+      <span class="text-xl mt-4 text-red-500">An error has occured when trying to register your account. Please try again.</span>
+      }
+    </div>
     }
+    <app-register-form [loading]="loading()" (registerChange)="onRegister($event)"></app-register-form>
   </div>
   <div class="register-image">
     <img

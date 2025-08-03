@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { RegisterFormComponent } from '../../components/register-form/register-form.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -12,12 +12,13 @@ import { RegisterUserDTO } from '../../models/auth.model';
   imports: [RegisterFormComponent, CommonModule, RouterModule],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterPageComponent implements OnInit {
   loading = signal(false);
   authService = inject(AuthService);
   toastService = inject(ToastService);
-  registerSuccess = signal(false);
+  registerSuccess = signal<boolean | null>(null);
 
   constructor() {
     this.listenToRegisterEffect();
@@ -40,6 +41,7 @@ export class RegisterPageComponent implements OnInit {
           });
         } else if (state.status === 'ERROR') {
           this.loading.set(false);
+          this.registerSuccess.set(false);
           this.authService.resetRegister();
           this.toastService.send({
             severity: 'error',

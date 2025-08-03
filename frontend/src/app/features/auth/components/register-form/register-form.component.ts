@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Validation from '../../../../shared/utils/validation';
 import { RegisterUserDTO } from '../../models/auth.model';
@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
   imports: [ReactiveFormsModule, CommonModule, ButtonModule, RouterLink],
   templateUrl: './register-form.component.html',
   styleUrl: './register-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterFormComponent implements OnInit {
   fb = inject(FormBuilder);

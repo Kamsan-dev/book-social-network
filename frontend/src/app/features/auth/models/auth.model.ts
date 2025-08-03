@@ -30,3 +30,9 @@ export interface AccountValidationDTO {
   code: string;
   verificationToken: string;
 }
+
+export interface TokenValidationDTO {
+  message: string;
+  user: UserDTO;
+  isValid: boolean;
+}

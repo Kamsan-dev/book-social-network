@@ -34,6 +34,7 @@ body {
   margin: 0;
   height: 100%;
   font-family: 'Manrope', sans-serif;
+  background-color: #f9f9f9;
 }
 
 h2 {
@@ -58,8 +59,10 @@ h2 {
 .form-container {
   max-width: 500px;
   padding: 2rem;
+  width: 100%;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 
   .form-group {
     display: flex;

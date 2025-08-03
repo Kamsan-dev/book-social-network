@@ -1,0 +1,19 @@
+.code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+
+  .digit-input {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+  }
+}
+
+:host {
+  display: block;
+  height: 100vh;
+}

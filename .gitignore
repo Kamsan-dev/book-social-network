@@ -62,6 +62,7 @@ buildNumber.properties
 /frontend/package-lock.json
 /frontend/yarn.lock
 /frontend/.output/
+/frontend/src/environments/
 
 # === OS-specific ===
 [Dd]esktop.ini
