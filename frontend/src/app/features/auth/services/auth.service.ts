@@ -19,7 +19,7 @@ export class AuthService {
   private tokenValidation$: WritableSignal<State<TokenValidationDTO>> = signal(State.Builder<TokenValidationDTO>().forInit());
   tokenValidationSig = computed(() => this.tokenValidation$());
 
-  private loginUser$: WritableSignal<State<AuthenticationSuccessDTO>> = signal(State.Builder<AuthenticationSuccessDTO>().forInit());
+  private loginUser$: WritableSignal<State<UserDTO>> = signal(State.Builder<UserDTO>().forInit());
   loginUserSig = computed(() => this.loginUser$());
 
   private logoutUser$: WritableSignal<State<{ message: string }>> = signal(State.Builder<{ message: string }>().forInit());
@@ -55,14 +55,14 @@ export class AuthService {
   }
 
   loginUser(request: AuthenticationFormDTO): void {
-    this.http.post<AuthenticationSuccessDTO>(`${environment?.API_URL}/auth/authenticate`, request).subscribe({
-      next: (response: AuthenticationSuccessDTO) => {
-        this.loginUser$.set(State.Builder<AuthenticationSuccessDTO>().forSuccess(response));
-        this.userSig.set(response.user);
+    this.http.post<UserDTO>(`${environment?.API_URL}/auth/authenticate`, request).subscribe({
+      next: (response: UserDTO) => {
+        this.loginUser$.set(State.Builder<UserDTO>().forSuccess(response));
+        this.userSig.set(response);
         this.router.navigateByUrl('/dashboard');
       },
       error: (error: HttpErrorResponse) => {
-        this.loginUser$.set(State.Builder<AuthenticationSuccessDTO>().forError(error));
+        this.loginUser$.set(State.Builder<UserDTO>().forError(error));
       },
     });
   }
@@ -92,7 +92,7 @@ export class AuthService {
   }
 
   resetLogin(): void {
-    this.loginUser$.set(State.Builder<AuthenticationSuccessDTO>().forInit());
+    this.loginUser$.set(State.Builder<UserDTO>().forInit());
   }
 
   hasAnyAuthority(authorities: string | Array<String>): boolean {

@@ -107,7 +107,7 @@ export class AuthPageComponent implements OnInit {
           this.toastService.send({
             severity: 'success',
             summary: 'Success',
-            detail: `Good morning ${state.value.user.firstName}`,
+            detail: `Good morning ${state.value.firstName}`,
           });
         } else if (state.status === 'ERROR') {
           this.loading.set(false);
