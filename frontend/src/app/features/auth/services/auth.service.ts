@@ -1,16 +1,16 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal, WritableSignal } from '@angular/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../../../environments/environment';
 import { State } from '../../../core/models/state.model';
 import { AccountValidationDTO, AuthenticationFormDTO, AuthenticationSuccessDTO, RegisterUserDTO, TokenValidationDTO, UserDTO } from '../models/auth.model';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private jwtHelper = new JwtHelperService();
+  private router = inject(Router);
 
   private registerUser$: WritableSignal<State<void>> = signal(State.Builder<void>().forInit());
   registerUserSig = computed(() => this.registerUser$());
@@ -21,7 +21,12 @@ export class AuthService {
   private loginUser$: WritableSignal<State<AuthenticationSuccessDTO>> = signal(State.Builder<AuthenticationSuccessDTO>().forInit());
   loginUserSig = computed(() => this.loginUser$());
 
-  user: WritableSignal<UserDTO | null> = signal(null);
+  private logoutUser$: WritableSignal<State<{ message: string }>> = signal(State.Builder<{ message: string }>().forInit());
+  logoutUserSig = computed(() => this.logoutUser$());
+
+  userSig: WritableSignal<UserDTO | null> = signal(null);
+
+  isAuthenticated = computed(() => this.userSig() != null);
 
   register(request: RegisterUserDTO): void {
     this.http.post<void>(`${environment?.API_URL}/auth/register`, request).subscribe({
@@ -49,9 +54,25 @@ export class AuthService {
     this.http.post<AuthenticationSuccessDTO>(`${environment?.API_URL}/auth/authenticate`, request).subscribe({
       next: (response: AuthenticationSuccessDTO) => {
         this.loginUser$.set(State.Builder<AuthenticationSuccessDTO>().forSuccess(response));
+        this.userSig.set(response.user);
+        this.router.navigateByUrl('/dashboard');
       },
       error: (error: HttpErrorResponse) => {
         this.loginUser$.set(State.Builder<AuthenticationSuccessDTO>().forError(error));
+      },
+    });
+  }
+
+  logout(): void {
+    this.userSig.set(null);
+    this.http.post<{ message: string }>(`${environment?.API_URL}/logout`, {}).subscribe({
+      next: (response: { message: string }) => {
+        this.logoutUser$.set(State.Builder<{ message: string }>().forSuccess(response));
+        this.router.navigateByUrl('auth');
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error);
+        this.logoutUser$.set(State.Builder<{ message: string }>().forError(error));
       },
     });
   }
@@ -65,5 +86,15 @@ export class AuthService {
 
   resetLogin(): void {
     this.loginUser$.set(State.Builder<AuthenticationSuccessDTO>().forInit());
+  }
+
+  hasAnyAuthority(authorities: string | Array<String>): boolean {
+    if (!this.isAuthenticated()) return false;
+
+    if (!Array.isArray(authorities)) {
+      authorities = [authorities];
+    }
+
+    return authorities.some((authority) => this.userSig()?.roles.includes(authority));
   }
 }

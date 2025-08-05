@@ -12,16 +12,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -46,9 +48,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        tokenRepository.setCookiePath("/");
+        requestHandler.setCsrfRequestAttributeName(null);
         http
                 .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(tokenRepository)
+                        .ignoringRequestMatchers(
+                                ("/auth/**")
+                        ).csrfTokenRequestHandler(requestHandler)
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(
@@ -76,7 +88,9 @@ public class SecurityConfig {
                                 .clearAuthentication(true)
                                 .logoutSuccessHandler((request, response, authentication) -> {
                                     response.setStatus(HttpServletResponse.SC_OK);
-                                    response.getWriter().write("Logout successful");
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    response.getWriter().write("{\"message\": \"Logout successful\"}");
+                                    response.getWriter().flush();
                                 }));
 
         return http.build();

@@ -1,9 +1,13 @@
 package com.kamsan.book.config.security;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.springframework.http.HttpHeaders;
+import com.kamsan.book.user.application.service.UserDetailsServiceImpl;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,14 +16,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.kamsan.book.user.application.service.UserDetailsServiceImpl;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,15 +40,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String jwt;
+        String jwt = null;
         final String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null){
+            for (Cookie cookie : cookies){
+                if ("access-token".equals(cookie.getName())){
+                    jwt = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (jwt == null){
             filterChain.doFilter(request, response);
             return;
         }
-
-        jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
         log.info("userEmail: {}", userEmail);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {

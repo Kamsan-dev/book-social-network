@@ -1,0 +1,17 @@
+<div class="flex items-center justify-center h-full">
+  <div class="form-container">
+    <h2 class="text-center">Terminate session</h2>
+    <div class="form-group">
+      <p-button
+        type="submit"
+        label="Terminate my session"
+        [size]="'small'"
+        [severity]="'secondary'"
+        [disabled]="loading()"
+        [styleClass]="'w-[100%]'"
+        [loading]="loading()"
+        (onClick)="onTerminateSessionClick($event)"
+      />
+    </div>
+  </div>
+</div>

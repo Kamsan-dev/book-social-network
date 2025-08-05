@@ -36,8 +36,8 @@ public class AuthResource {
 	}
 	
 	@PostMapping("authenticate")
-	public ResponseEntity<AuthenticationSuccessDTO> authenticateUser(@RequestBody @Valid AuthenticationFormDTO dto){
-			return ResponseEntity.ok(authenticationService.authenticateUser(dto));
+	public ResponseEntity<AuthenticationSuccessDTO> authenticateUser(@RequestBody @Valid AuthenticationFormDTO dto, HttpServletResponse response){
+			return ResponseEntity.ok(authenticationService.authenticateUser(dto, response));
 	}
 	
 	@PostMapping("refresh-token")

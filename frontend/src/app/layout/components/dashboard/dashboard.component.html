@@ -1,0 +1,7 @@
+@if (authService.isAuthenticated()){
+<p>Bonjour {{ authService.userSig()?.firstName }}</p>
+
+<span [routerLink]="['/logout']">log out</span>
+} @else {
+<p>Non connecté</p>
+}
