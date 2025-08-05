@@ -41,4 +41,9 @@ public class UserResouce {
     public ResponseEntity<byte[]> getUserProfileImage(@PathVariable(name = "userId") UUID userPublicId) {
         return new ResponseEntity<>(userService.getUserProfileImage(userPublicId), HttpStatus.OK);
     }
+
+    @GetMapping("profile")
+    public ResponseEntity<ReadUserDTO> profile(){
+        return ResponseEntity.ok(authenticationService.getAuthenticatedUserFromSecurityContext());
+    }
 }

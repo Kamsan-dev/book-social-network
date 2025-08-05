@@ -88,7 +88,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticationSuccessDTO authenticateUser(AuthenticationFormDTO dto, HttpServletResponse response) {
+    public ReadUserDTO authenticateUser(AuthenticationFormDTO dto, HttpServletResponse response) {
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new ApiException(String.format(USER_NOT_FOUND_MSG, dto.email())));
 
@@ -122,10 +122,7 @@ public class AuthenticationService {
             response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
 
-            return new AuthenticationSuccessDTO(
-                    accessToken,
-                    refreshToken,
-                    userMapper.userToReadUserDTO(user));
+            return userMapper.userToReadUserDTO(user);
 
         } catch (DisabledException exception) {
             throw new ApiException("This account is disabled. Please contact our support.");
@@ -171,13 +168,8 @@ public class AuthenticationService {
                 revokeAllUserTokens(user);
                 saveUserAccessToken(user, accessToken);
 
-                AuthenticationSuccessDTO authResponse = new AuthenticationSuccessDTO(
-                        accessToken,
-                        refreshToken,
-                        userMapper.userToReadUserDTO(user));
-
                 try {
-                    new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                    new ObjectMapper().writeValue(response.getOutputStream(), userMapper.userToReadUserDTO(user));
                 } catch (IOException e) {
                     throw new ApiException(
                             String.format("Something went wrong when creating a new access token. %s", e.getMessage()));

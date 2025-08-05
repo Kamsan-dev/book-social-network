@@ -1,5 +1,6 @@
 package com.kamsan.book.user.presentation;
 
+import com.kamsan.book.user.application.dto.ReadUserDTO;
 import com.kamsan.book.user.application.dto.account.*;
 import com.kamsan.book.user.application.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +37,7 @@ public class AuthResource {
 	}
 	
 	@PostMapping("authenticate")
-	public ResponseEntity<AuthenticationSuccessDTO> authenticateUser(@RequestBody @Valid AuthenticationFormDTO dto, HttpServletResponse response){
+	public ResponseEntity<ReadUserDTO> authenticateUser(@RequestBody @Valid AuthenticationFormDTO dto, HttpServletResponse response){
 			return ResponseEntity.ok(authenticationService.authenticateUser(dto, response));
 	}
 	

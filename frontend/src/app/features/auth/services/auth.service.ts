@@ -1,9 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { State } from '../../../core/models/state.model';
 import { AccountValidationDTO, AuthenticationFormDTO, AuthenticationSuccessDTO, RegisterUserDTO, TokenValidationDTO, UserDTO } from '../models/auth.model';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,9 @@ export class AuthService {
 
   private logoutUser$: WritableSignal<State<{ message: string }>> = signal(State.Builder<{ message: string }>().forInit());
   logoutUserSig = computed(() => this.logoutUser$());
+
+  private profileUser$: WritableSignal<State<UserDTO>> = signal(State.Builder<UserDTO>().forInit());
+  profileUserSig = computed(() => this.profileUser$);
 
   userSig: WritableSignal<UserDTO | null> = signal(null);
 
@@ -64,17 +68,20 @@ export class AuthService {
   }
 
   logout(): void {
-    this.userSig.set(null);
+    this.clearUserData();
     this.http.post<{ message: string }>(`${environment?.API_URL}/logout`, {}).subscribe({
       next: (response: { message: string }) => {
         this.logoutUser$.set(State.Builder<{ message: string }>().forSuccess(response));
         this.router.navigateByUrl('auth');
       },
       error: (error: HttpErrorResponse) => {
-        console.log(error);
         this.logoutUser$.set(State.Builder<{ message: string }>().forError(error));
       },
     });
+  }
+
+  profile(): Observable<UserDTO> {
+    return this.http.get<UserDTO>(`${environment.API_URL}/user/profile`);
   }
 
   resetTokenValidation(): void {
@@ -96,5 +103,9 @@ export class AuthService {
     }
 
     return authorities.some((authority) => this.userSig()?.roles.includes(authority));
+  }
+
+  public clearUserData(): void {
+    this.userSig.set(null);
   }
 }

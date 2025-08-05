@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { RegisterFormComponent } from '../../components/register-form/register-form.component';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../../../layout/toast.service';
 import { AuthenticationFormDTO, RegisterUserDTO } from '../../models/auth.model';
@@ -52,6 +52,7 @@ export class AuthPageComponent implements OnInit {
   loading = signal(false);
   authService = inject(AuthService);
   toastService = inject(ToastService);
+  router = inject(Router);
 
   errorMessage = signal('');
   displayLoginForm = signal(true);
@@ -62,7 +63,12 @@ export class AuthPageComponent implements OnInit {
     this.listenToLoginEffect();
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    if (this.authService.isAuthenticated() && this.authService.userSig()) {
+      this.router.navigateByUrl('/dashboard');
+      return;
+    }
+  }
 
   private listenToRegisterEffect(): void {
     effect(
