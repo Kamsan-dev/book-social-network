@@ -82,18 +82,18 @@ h2 {
     input {
       padding: 0.6rem 0.8rem;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 0px !important;
       font-size: 1rem;
       transition: border-color 0.2s;
       color: #333;
-      height: 35px;
-      &.is-invalid {
+      height: 40px;
+      &.is-invalid:not(.input-checkbox) {
         box-shadow: inset 0 0 0 1px #dc3545;
         border: #dc3545;
         color: #dc3545;
       }
 
-      &:focus:not(.is-invalid) {
+      &:focus:not(.is-invalid, .input-checkbox) {
         outline: none;
         border: #4a90e2;
         box-shadow: inset 0 0 0 1px #4a90e2;

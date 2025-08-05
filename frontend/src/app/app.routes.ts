@@ -8,7 +8,7 @@ export const routes: Routes = [
   },
   {
     path: 'signup',
-    loadComponent: () => import('./features/auth/pages/register-page/register-page.component').then((c) => c.RegisterPageComponent),
+    loadComponent: () => import('./features/auth/pages/auth-page/auth-page.component').then((c) => c.AuthPageComponent),
   },
 
   {

@@ -1,5 +1,10 @@
 <div class="form-container">
-  <h2>Register for an account</h2>
+  @if (message() != null) {
+  <div class="mb-4">
+    <p-message [severity]="message()?.type" [text]="message()?.text" [styleClass]="'w-full'"></p-message>
+  </div>
+  }
+  <h2>Sign up</h2>
   <form [formGroup]="form" (ngSubmit)="onSubmitRegister()">
     <div class="form-group">
       <label>First name</label>
@@ -85,8 +90,14 @@
 
     <div class="form-group">
       <div class="flex gap-2 items-center">
-        <input type="checkbox" formControlName="acceptTerms" class="p-checkbox" [ngClass]="{ 'is-invalid': f['acceptTerms'].invalid && f['acceptTerms'].dirty }" />
-        <label for="acceptTerms" class="text-sm label-no-mb">I have read and agree to the Terms</label>
+        <input
+          id="acceptTerms"
+          type="checkbox"
+          formControlName="acceptTerms"
+          class="p-checkbox input-checkbox"
+          [ngClass]="{ 'is-invalid': f['acceptTerms'].invalid && f['acceptTerms'].dirty }"
+        />
+        <label for="acceptTerms" class="text-sm label-no-mb cursor-pointer">I have read and agree to the Terms</label>
       </div>
       @if (f['acceptTerms'].invalid && f['acceptTerms'].dirty) {
       <div class="invalid-feedback">Accept Terms is required</div>
@@ -96,7 +107,7 @@
     <div class="form-group">
       <p-button
         type="submit"
-        label="Register"
+        label="Sign up"
         [size]="'small'"
         [severity]="'secondary'"
         [disabled]="form.invalid || loading()"
@@ -104,6 +115,6 @@
         [loading]="loading()"
       />
     </div>
-    <a class="span-link" [routerLink]="['/signin']">have an account ? Sign in now.</a>
+    <a class="span-link" (click)="onSignInLinkClick($event)">have an account ? Sign in now.</a>
   </form>
 </div>

@@ -8,7 +8,7 @@ export interface AuthenticationFormDTO {
   password: string;
 }
 
-export interface AuthenticationSuccesDTO {
+export interface AuthenticationSuccessDTO {
   access_token: string;
   refresh_token: string;
   user: UserDTO;

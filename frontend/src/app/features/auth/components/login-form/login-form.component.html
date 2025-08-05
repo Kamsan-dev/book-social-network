@@ -1,0 +1,56 @@
+<div class="form-container">
+  @if (message() != null) {
+  <div class="mb-4">
+    <p-message severity="error" [text]="message()?.text" [styleClass]="'w-full'"></p-message>
+  </div>
+  }
+  <h2>Sign in</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmitLogin()">
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="text"
+        placeholder="jane-smith@gmail.com"
+        formControlName="email"
+        class="p-inputtext"
+        [ngClass]="{ 'is-invalid': f['email'].invalid && f['email'].dirty }"
+      />
+      @if (f['email'].invalid && f['email'].dirty) {
+      <div class="invalid-feedback">
+        <div>Email is required</div>
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        placeholder="Pick a secure password"
+        formControlName="password"
+        class="p-inputtext"
+        [ngClass]="{ 'is-invalid': f['password'].invalid && f['password'].dirty }"
+      />
+      @if (f['password'].invalid && f['password'].dirty) {
+      <div class="invalid-feedback">
+        @if (f['password'].errors!['required']) {
+        <div>Password is required</div>
+        }
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <p-button
+        type="submit"
+        label="Sign in"
+        [size]="'small'"
+        [severity]="'secondary'"
+        [disabled]="form.invalid || loading()"
+        [styleClass]="'w-[100%]'"
+        [loading]="loading()"
+      />
+    </div>
+    <a class="span-link" (click)="onSignUpLinkClick($event)">Don't have an account ? Sign up now.</a>
+  </form>
+</div>
