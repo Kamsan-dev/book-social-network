@@ -1,0 +1,14 @@
+.navbar {
+  height: 6.5vh;
+  margin-left: 0;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #333;
+
+  &.with-sidebar-collapsed {
+    margin-left: 5rem;
+  }
+
+  &.trimmed {
+    margin-left: 16.875rem;
+  }
+}

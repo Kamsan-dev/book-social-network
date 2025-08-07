@@ -28,6 +28,7 @@ export class LogoutComponent {
         let state = this.authService.logoutUserSig();
         if (state.status === 'OK') {
           this.loading.set(false);
+          this.authService.resetLogout();
           this.toastService.send({
             severity: 'success',
             summary: 'Success',
@@ -35,6 +36,7 @@ export class LogoutComponent {
           });
         } else if (state.status === 'ERROR') {
           this.loading.set(false);
+          this.authService.resetLogout();
           this.toastService.send({
             severity: 'error',
             summary: 'Error',

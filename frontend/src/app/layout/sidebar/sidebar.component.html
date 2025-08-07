@@ -1,0 +1,24 @@
+<div *ngIf="sidebarService.openSig()" class="sidebar-backdrop" (click)="sidebarService.toggle()"></div>
+
+<div
+  class="sidebar"
+  [ngClass]="{
+    'sidebar-collapsed': sidebarService.collapsedSig() && !responsiveService.phone() && !responsiveService.tablet(),
+    open: (responsiveService.phone() || responsiveService.tablet()) && sidebarService.openSig(),
+    hide: (responsiveService.phone() || responsiveService.tablet()) && !sidebarService.openSig()
+  }"
+>
+  <div class="logo-container">
+    <div class="text-3xl">App</div>
+  </div>
+  <div class="sidebar-nav">
+    @for (item of sidebarItems; track $index) {
+    <li class="sidebar-nav-item">
+      <a class="sidebar-nav-link" [routerLink]="item.routeLink" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <fa-icon [icon]="item.icon" class="sidebar-link-icon"></fa-icon>
+        <span class="sidebar-link-text">{{ item.label }}</span>
+      </a>
+    </li>
+    }
+  </div>
+</div>

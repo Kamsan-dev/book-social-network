@@ -1,0 +1,9 @@
+<div
+  class="navbar"
+  [ngClass]="{
+    'with-sidebar-collapsed': sidebarService.collapsedSig() && !responsiveService.phone() && !responsiveService.tablet(),
+    trimmed: !sidebarService.collapsedSig() && !responsiveService.phone() && !responsiveService.tablet()
+  }"
+>
+  <button (click)="onSidebarToggleClick($event)">Click to move sidebar</button>
+</div>

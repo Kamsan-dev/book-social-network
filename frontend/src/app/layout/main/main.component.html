@@ -1,0 +1,10 @@
+<div
+  class="main-body"
+  [ngClass]="{
+    collapsed: authService.isAuthenticated() && !responsiveService.phone() && !responsiveService.tablet() && sidebarService.collapsedSig(),
+    trimmed: authService.isAuthenticated() && !responsiveService.phone() && !responsiveService.tablet() && !sidebarService.collapsedSig(),
+    full: !authService.isAuthenticated()
+  }"
+>
+  <router-outlet />
+</div>

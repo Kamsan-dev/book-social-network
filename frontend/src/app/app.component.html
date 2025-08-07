@@ -1,2 +1,6 @@
 <p-toast position="bottom-center"></p-toast>
-<router-outlet />
+@if (authService.isAuthenticated()){
+<app-navbar (sidebarToggleClick)="onSidebarToggleClick()" />
+<app-sidebar />
+}
+<app-main />

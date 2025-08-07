@@ -1,7 +1,9 @@
-@if (authService.isAuthenticated()){
-<p>Bonjour {{ authService.userSig()?.firstName }}</p>
+<div class="main max">
+  @if (authService.isAuthenticated()){
+  <span>Bonjour {{ authService.userSig()?.firstName }}</span>
 
-<span [routerLink]="['/logout']">log out</span>
-} @else {
-<p>Non connecté</p>
-}
+  <span [routerLink]="['/logout']">log out</span>
+  } @else {
+  <span>Non connecté</span>
+  }
+</div>

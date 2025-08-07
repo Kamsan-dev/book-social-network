@@ -1,0 +1,24 @@
+.main-body {
+  transition: all 0.5s ease;
+  background-color: rgb(230, 239, 244);
+  height: calc(100vh - 6.5vh);
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: 0;
+
+  &.full {
+    padding-left: 0rem;
+    padding-right: 0rem;
+  }
+
+  &.trimmed {
+    margin-left: 16.875rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  &.collapsed {
+    margin-left: 5rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}

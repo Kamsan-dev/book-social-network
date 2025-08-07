@@ -95,6 +95,10 @@ export class AuthService {
     this.loginUser$.set(State.Builder<UserDTO>().forInit());
   }
 
+  resetLogout(): void {
+    this.logoutUser$.set(State.Builder<{ message: string }>().forInit());
+  }
+
   hasAnyAuthority(authorities: string | Array<String>): boolean {
     if (!this.isAuthenticated()) return false;
 
