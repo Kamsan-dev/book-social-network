@@ -44,6 +44,11 @@ export class SidebarComponent implements OnInit {
         label: 'Settings',
         icon: 'gear',
       },
+      {
+        label: 'Log out',
+        icon: 'power-off',
+        routeLink: 'logout',
+      },
     ];
   }
 }

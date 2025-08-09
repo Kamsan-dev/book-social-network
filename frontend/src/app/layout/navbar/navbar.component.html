@@ -5,5 +5,16 @@
     trimmed: !sidebarService.collapsedSig() && !responsiveService.phone() && !responsiveService.tablet()
   }"
 >
-  <button (click)="onSidebarToggleClick($event)">Click to move sidebar</button>
+  <div class="navbar-container">
+    <div>
+      <fa-icon class="p-2 cursor-pointer" [icon]="'bars'" (click)="onSidebarToggleClick($event)"></fa-icon>
+    </div>
+    <div class="profile-info">
+      <img [src]="connectedUserUrlImage()" [alt]="connectedUser().publicId" class="rounded-full w-[36px] h-[36px]" />
+      <div class="profile-info-details">
+        <span class="font-bold">{{ connectedUser().firstName }} {{ connectedUser().lastName }}</span>
+        <span class="text-xs">{{ connectedUser().roles.at(0) }}</span>
+      </div>
+    </div>
+  </div>
 </div>

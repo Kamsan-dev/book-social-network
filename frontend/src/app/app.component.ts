@@ -40,10 +40,6 @@ export class AppComponent implements OnInit {
     this.loadUserProfile();
   }
 
-  onSidebarToggleClick() {
-    this.sidebarService.toggle();
-  }
-
   private listenToastService(): void {
     this.toastService.sendSub.subscribe({
       next: (newMessage) => {

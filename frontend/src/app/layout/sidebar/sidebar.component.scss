@@ -1,11 +1,12 @@
+@import '../../shared/styles/variables.scss';
+
 .sidebar {
   width: 16.875rem;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  background-color: #f9f9f9;
-  border-right: 1px solid #333;
+  background-color: $secondaryColor;
   transition: all 0.3s ease;
   z-index: 100;
 
@@ -23,7 +24,7 @@
     padding: 0.938rem 0.938rem 0 0.938rem;
     width: 100%;
     height: 6.5vh;
-    border-bottom: 1px solid #333;
+    border-bottom: 2px inset $thirdColor;
   }
 
   .sidebar-nav {
@@ -33,6 +34,7 @@
     display: flex;
     flex-direction: column;
     height: calc(100% - 3.65rem);
+    border-right: 2px inset $thirdColor;
     cursor: pointer;
   }
 
@@ -47,6 +49,7 @@
     transition: all 0.3s ease;
     padding: 0 12px;
     box-sizing: border-box;
+    color: #333;
   }
 
   .sidebar-nav-link,
