@@ -106,7 +106,7 @@ export class AuthService {
       authorities = [authorities];
     }
 
-    return authorities.some((authority) => this.userSig()?.roles.includes(authority));
+    return authorities.some((authority) => this.userSig()?.roles?.includes(authority));
   }
 
   public clearUserData(): void {

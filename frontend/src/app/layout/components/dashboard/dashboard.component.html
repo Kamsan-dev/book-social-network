@@ -1,9 +1,17 @@
-<div class="main max">
-  @if (authService.isAuthenticated()){
-  <span>Bonjour {{ authService.userSig()?.firstName }}</span>
-
-  <span [routerLink]="['/logout']">log out</span>
+<div class="h-fit pt-4 pb-4">
+  @if (loading()) {
+  <div class="flex justify-center items-center h-full">
+    <fa-icon icon="circle-notch" animation="spin" class="text-gray-500-600 text-4xl"></fa-icon>
+  </div>
+  } @else { @if (users()?.length) {
+  <div class="dashboard-grid">
+    @for (user of users(); track user.publicId) {
+    <app-user-card [user]="user"></app-user-card>
+    }
+  </div>
   } @else {
-  <span>Non connecté</span>
-  }
+  <div class="flex justify-center items-center h-full">
+    <h2>No users were found.</h2>
+  </div>
+  } }
 </div>

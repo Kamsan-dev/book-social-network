@@ -5,6 +5,10 @@
   margin-left: 0;
   background-color: $secondaryColor;
   border-bottom: 2px inset $thirdColor;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
 
   .navbar-container {
     padding: 0 3rem;
@@ -30,9 +34,11 @@
 
   &.with-sidebar-collapsed {
     margin-left: 5rem;
+    width: calc(100% - 5rem);
   }
 
   &.trimmed {
     margin-left: 16.875rem;
+    width: calc(100% - 16.875rem);
   }
 }

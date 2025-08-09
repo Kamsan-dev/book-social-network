@@ -21,8 +21,8 @@ export interface UserDTO {
   profileImageId: string;
   accountLocked: boolean;
   enabled: boolean;
-  roles: Array<String>;
-  authorities: Array<String>;
+  roles?: Array<String>;
+  authorities?: Array<String>;
   publicId: string;
 }
 

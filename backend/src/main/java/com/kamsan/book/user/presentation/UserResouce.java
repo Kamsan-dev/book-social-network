@@ -1,9 +1,12 @@
 package com.kamsan.book.user.presentation;
 
 import com.kamsan.book.user.application.dto.ReadUserDTO;
+import com.kamsan.book.user.application.dto.UserDTO;
 import com.kamsan.book.user.application.service.AuthenticationService;
 import com.kamsan.book.user.application.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,5 +48,10 @@ public class UserResouce {
     @GetMapping("profile")
     public ResponseEntity<ReadUserDTO> profile(){
         return ResponseEntity.ok(authenticationService.getAuthenticatedUserFromSecurityContext());
+    }
+
+    @GetMapping("get-all")
+    public ResponseEntity<Page<UserDTO>> findAllUsers(Pageable pageable){
+        return ResponseEntity.ok(userService.getUsersPage(pageable));
     }
 }

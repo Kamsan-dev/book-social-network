@@ -13,7 +13,7 @@
       <img [src]="connectedUserUrlImage()" [alt]="connectedUser().publicId" class="rounded-full w-[36px] h-[36px]" />
       <div class="profile-info-details">
         <span class="font-bold">{{ connectedUser().firstName }} {{ connectedUser().lastName }}</span>
-        <span class="text-xs">{{ connectedUser().roles.at(0) }}</span>
+        <span class="text-xs">{{ connectedUser().roles?.at(0) }}</span>
       </div>
     </div>
   </div>

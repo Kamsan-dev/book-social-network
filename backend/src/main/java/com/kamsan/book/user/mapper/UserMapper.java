@@ -1,6 +1,7 @@
 package com.kamsan.book.user.mapper;
 
 import com.kamsan.book.user.application.dto.ReadUserDTO;
+import com.kamsan.book.user.application.dto.UserDTO;
 import com.kamsan.book.user.application.dto.account.RegisterUserDTO;
 import com.kamsan.book.user.domain.User;
 import com.kamsan.book.user.enums.PermissionType;
@@ -16,6 +17,8 @@ public interface UserMapper {
 	@Mapping(target = "authorities", expression = "java(mapAuthorities(user))")
 	@Mapping(target = "roles", expression = "java(mapRoles(user))")
 	ReadUserDTO userToReadUserDTO(User user);
+
+	UserDTO userToUserDTO(User user);
 	
 	@Mapping(target="accountLocked", ignore = true)
 	@Mapping(target="enabled", ignore = true)

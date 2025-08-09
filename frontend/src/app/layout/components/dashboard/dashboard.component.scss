@@ -1,2 +1,5 @@
-.main {
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 18rem);
+  gap: 10px;
 }

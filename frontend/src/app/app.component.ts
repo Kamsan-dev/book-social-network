@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -31,23 +31,16 @@ export class AppComponent implements OnInit {
   private faIconLibrary = inject(FaIconLibrary);
   sidebarService = inject(SidebarService);
   responsiveService = inject(ResponsiveService);
-
   loading = signal(false);
+
+  constructor() {
+    this.listenToAuthenticatedUser();
+  }
 
   public ngOnInit(): void {
     this.initFontAwesome();
     this.listenToastService();
     this.loadUserProfile();
-  }
-
-  private listenToastService(): void {
-    this.toastService.sendSub.subscribe({
-      next: (newMessage) => {
-        if (newMessage && newMessage.summary !== this.toastService.INIT_STATE) {
-          this.messageService.add(newMessage);
-        }
-      },
-    });
   }
 
   private initFontAwesome(): void {
@@ -71,5 +64,26 @@ export class AppComponent implements OnInit {
           // todo toaster error
         },
       });
+  }
+
+  private listenToastService(): void {
+    this.toastService.sendSub.subscribe({
+      next: (newMessage) => {
+        if (newMessage && newMessage.summary !== this.toastService.INIT_STATE) {
+          this.messageService.add(newMessage);
+        }
+      },
+    });
+  }
+  private listenToAuthenticatedUser(): void {
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        document.body.classList.add('authenticated');
+        document.body.classList.remove('unauthenticated');
+      } else {
+        document.body.classList.add('unauthenticated');
+        document.body.classList.remove('authenticated');
+      }
+    });
   }
 }
