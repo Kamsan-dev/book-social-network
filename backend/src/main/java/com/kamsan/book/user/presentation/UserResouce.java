@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,11 +26,11 @@ public class UserResouce {
     private final AuthenticationService authenticationService;
 
     @PostMapping(value = "profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadUserProfileImage(
+    public ResponseEntity<Map<String, String>> uploadUserProfileImage(
             @RequestParam(name = "file") MultipartFile file) {
         ReadUserDTO connectedUser = authenticationService.getAuthenticatedUserFromSecurityContext();
-        userService.uploadUserProfileImage(file, connectedUser.publicId());
-        return ResponseEntity.ok().build();
+        String profileImageId = userService.uploadUserProfileImage(file, connectedUser.publicId());
+        return ResponseEntity.ok(Map.of("profileImageId", profileImageId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,12 +47,12 @@ public class UserResouce {
     }
 
     @GetMapping("profile")
-    public ResponseEntity<ReadUserDTO> profile(){
+    public ResponseEntity<ReadUserDTO> profile() {
         return ResponseEntity.ok(authenticationService.getAuthenticatedUserFromSecurityContext());
     }
 
     @GetMapping("get-all")
-    public ResponseEntity<Page<UserDTO>> findAllUsers(Pageable pageable){
+    public ResponseEntity<Page<UserDTO>> findAllUsers(Pageable pageable) {
         return ResponseEntity.ok(userService.getUsersPage(pageable));
     }
 }

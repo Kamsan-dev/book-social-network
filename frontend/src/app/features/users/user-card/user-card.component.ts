@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { UserDTO } from '../../auth/models/auth.model';
 import { environment } from '../../../../environments/environment';
 
@@ -13,11 +13,18 @@ import { environment } from '../../../../environments/environment';
 export class UserCardComponent {
   user = input.required<UserDTO>();
 
-  getUrlImageUser(user: UserDTO): string {
-    if (user.profileImageId) {
-      return `${environment?.API_URL}/user/${user.publicId}/profile-image`;
-    } else {
-      return 'https://www.shutterstock.com/image-vector/default-profile-picture-avatar-photo-600nw-1725917284.jpg';
-    }
+  @Output()
+  updateUserClick = new EventEmitter<UserDTO>();
+
+  imageUrl = computed(() => {
+    const u = this.user();
+    return u.profileImageId
+      ? `${environment?.API_URL}/user/${this.user().publicId}/profile-image`
+      : 'https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg';
+  });
+
+  onUpdateUserClick(event: MouseEvent | TouchEvent) {
+    event.stopImmediatePropagation();
+    this.updateUserClick.emit(this.user());
   }
 }

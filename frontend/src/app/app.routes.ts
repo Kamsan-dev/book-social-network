@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './layout/components/dashboard/dashboard.component';
 import { authorityRouteAccess } from './core/guards/authority-route-access.guard';
 import { LogoutComponent } from './features/auth/components/logout/logout.component';
+import { DashboardComponent } from './layout/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {

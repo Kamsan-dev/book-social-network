@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
   imports: [CommonModule, FontAwesomeModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
   sidebarService = inject(SidebarService);

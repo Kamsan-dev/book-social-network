@@ -1,0 +1,16 @@
+<p-sidebar [visible]="sidebarVisible()" position="right" (visibleChange)="onSidebarVisibleChange($event)" styleClass="w-[35rem]">
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-2">
+      <span>
+        Update details of <span class="font-bold text-xl text-blue-500">{{ user()?.firstName }} {{ user()?.lastName }}</span>
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="flex justify-center items-center flex-col gap-6">
+      <img [src]="connectedUserUrlImage()" [alt]="user()?.publicId" class="rounded-full user-profile-image" />
+      <p-fileUpload name="profileImage" [customUpload]="true" [multiple]="false" accept="image/*" maxFileSize="1000000" (uploadHandler)="onUploadProfileImage($event)">
+      </p-fileUpload>
+    </div>
+  </ng-template>
+</p-sidebar>

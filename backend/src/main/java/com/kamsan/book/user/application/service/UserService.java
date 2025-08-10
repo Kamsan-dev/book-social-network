@@ -31,7 +31,7 @@ public class UserService {
 
 
     @Transactional
-    public void uploadUserProfileImage(MultipartFile file, UUID userPublicId) {
+    public String uploadUserProfileImage(MultipartFile file, UUID userPublicId) {
         var profileImageId = UUID.randomUUID().toString();
         var s3Key = "profile-images/%s/%s".formatted(userPublicId, profileImageId);
         try {
@@ -48,6 +48,7 @@ public class UserService {
         if (success != 1) {
             throw new ApiException(String.format("Failed to update profile image of user with public id %s", userPublicId));
         }
+        return profileImageId;
     }
 
     @Transactional(readOnly = true)

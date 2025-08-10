@@ -6,7 +6,7 @@
   } @else { @if (users()?.length) {
   <div class="dashboard-grid">
     @for (user of users(); track user.publicId) {
-    <app-user-card [user]="user"></app-user-card>
+    <app-user-card [user]="user" (updateUserClick)="onUpdateUserClick($event)"></app-user-card>
     }
   </div>
   } @else {
@@ -15,3 +15,4 @@
   </div>
   } }
 </div>
+<app-view-user-details [sidebarVisible]="rightSidebarVisible()" [user]="userToShow()" (sidebarVisibleChange)="onSidebarVisibleChange($event)"></app-view-user-details>
