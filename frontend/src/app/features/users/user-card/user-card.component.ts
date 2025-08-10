@@ -19,7 +19,7 @@ export class UserCardComponent {
   imageUrl = computed(() => {
     const u = this.user();
     return u.profileImageId
-      ? `${environment?.API_URL}/user/${this.user().publicId}/profile-image`
+      ? `${environment?.API_URL}/user/${this.user().publicId}/profile-image?t=${Date.now()}`
       : 'https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg';
   });
 

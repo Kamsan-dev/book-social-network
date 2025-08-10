@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
   imports: [CommonModule, FontAwesomeModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
   sidebarService = inject(SidebarService);
@@ -21,7 +21,12 @@ export class NavbarComponent {
   authService = inject(AuthService);
 
   connectedUser = computed(() => this.authService.userSig() as UserDTO);
-  connectedUserUrlImage = computed(() => `${environment?.API_URL}/user/${this.connectedUser().publicId}/profile-image`);
+  connectedUserUrlImage = computed(() => {
+    const user = this.connectedUser();
+    return user.profileImageId
+      ? `${environment?.API_URL}/user/${user.publicId}/profile-image?t=${Date.now()}`
+      : 'https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg';
+  });
 
   onSidebarToggleClick(event: MouseEvent | TouchEvent): void {
     event.stopImmediatePropagation();

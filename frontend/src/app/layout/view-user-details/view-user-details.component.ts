@@ -19,10 +19,11 @@ export class ViewUserDetailsComponent {
   userService = inject(UserService);
   user = input.required<UserDTO | null>();
   loading = signal(false);
+
   connectedUserUrlImage = computed(() => {
     const u = this.user();
     return u?.profileImageId
-      ? `${environment?.API_URL}/user/${u?.publicId}/profile-image`
+      ? `${environment?.API_URL}/user/${u?.publicId}/profile-image?t=${Date.now()}`
       : 'https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg';
   });
   sidebarVisible = input.required<boolean>();
