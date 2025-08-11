@@ -1,4 +1,4 @@
-package com.kamsan.book.config.security;
+package com.kamsan.book.config.handler;
 
 import com.kamsan.book.user.domain.AccessToken;
 import com.kamsan.book.user.repository.AccessTokenRepository;
@@ -69,18 +69,8 @@ public class LogoutService implements LogoutHandler {
                 .sameSite("Strict")
                 .build();
 
-        // Clear XSRF-TOKEN cookie
-//        ResponseCookie expiredXsrfToken = ResponseCookie.from("XSRF-TOKEN", "")
-//                .httpOnly(false) // Match CookieCsrfTokenRepository.withHttpOnlyFalse()
-//                .secure(false)
-//                .path("/")
-//                .maxAge(0)
-//                .sameSite("Strict")
-//                .build();
-
         response.setHeader(HttpHeaders.SET_COOKIE, expiredAccessToken.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, expiredRefreshToken.toString());
-        //response.addHeader(HttpHeaders.SET_COOKIE, expiredXsrfToken.toString());
         response.setHeader(HttpHeaders.AUTHORIZATION, "");
     }
 

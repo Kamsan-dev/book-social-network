@@ -16,7 +16,7 @@ export class UserService {
   private users$: WritableSignal<State<Page<UserDTO>>> = signal(State.Builder<Page<UserDTO>>().forInit());
   usersSig = computed(() => this.users$());
 
-  private updateProfileImage$: WritableSignal<State<{ profileImageId: string }>> = signal(State.Builder<{ profileImageId: string }>().forInit());
+  private updateProfileImage$: WritableSignal<State<{ publicId: string }>> = signal(State.Builder<{ publicId: string }>().forInit());
   updateProfileImageSig = computed(() => this.updateProfileImage$());
 
   getAll(pageRequest: Pagination): void {
@@ -31,13 +31,13 @@ export class UserService {
     });
   }
 
-  updateProfileImage(formData: FormData): void {
-    this.http.post<{ profileImageId: string }>(`${environment?.API_URL}/user/profile-image`, formData).subscribe({
-      next: (response: { profileImageId: string }) => {
-        this.updateProfileImage$.set(State.Builder<{ profileImageId: string }>().forSuccess(response));
+  updateProfileImage(formData: FormData, publicUserId: string): void {
+    this.http.post<{ publicId: string }>(`${environment?.API_URL}/user/users/${publicUserId}/profile-image`, formData).subscribe({
+      next: (response: { publicId: string }) => {
+        this.updateProfileImage$.set(State.Builder<{ publicId: string }>().forSuccess(response));
       },
       error: (error: HttpErrorResponse) => {
-        this.updateProfileImage$.set(State.Builder<{ profileImageId: string }>().forError(error));
+        this.updateProfileImage$.set(State.Builder<{ publicId: string }>().forError(error));
       },
     });
   }
@@ -47,6 +47,6 @@ export class UserService {
   }
 
   resetUpdateProfileImage(): void {
-    this.updateProfileImage$.set(State.Builder<{ profileImageId: string }>().forInit());
+    this.updateProfileImage$.set(State.Builder<{ publicId: string }>().forInit());
   }
 }

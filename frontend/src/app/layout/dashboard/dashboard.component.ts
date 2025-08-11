@@ -69,7 +69,7 @@ export class DashboardComponent implements OnInit {
       () => {
         let state = this.userService.updateProfileImageSig();
         if (state.status === 'OK' && state.value) {
-          this.updateProfileImageIdConnectedUser(state.value.profileImageId);
+          this.updateProfileImageIdConnectedUser(state.value.publicId);
           this.userService.resetUpdateProfileImage();
           this.cdr.markForCheck();
         } else if (state.status === 'ERROR') {
@@ -95,18 +95,16 @@ export class DashboardComponent implements OnInit {
     this.rightSidebarVisible.set(event);
   }
 
-  updateProfileImageIdConnectedUser(newProfileImageId: string): void {
-    console.log('updateProfileImageId');
+  updateProfileImageIdConnectedUser(userPublicId: string): void {
     // Update connected user
     let currentUser = this.authService.userSig() as UserDTO;
-    if (currentUser) {
-      console.log('update connected user');
-      this.authService.userSig.set({ ...currentUser, profileImageId: newProfileImageId });
+    if (currentUser && currentUser.publicId === userPublicId) {
+      this.authService.userSig.set({ ...currentUser });
     }
 
     // Update in users list
-    this.users.update((users) => users?.map((u) => (u.publicId === currentUser?.publicId ? { ...u, profileImageId: newProfileImageId } : u)));
+    this.users.update((users) => users?.map((u) => (u.publicId === userPublicId ? { ...u } : u)));
 
-    this.userToShow.set({ ...(this.userToShow() as UserDTO), profileImageId: newProfileImageId });
+    this.userToShow.set({ ...(this.userToShow() as UserDTO) });
   }
 }

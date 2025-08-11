@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { UserDTO } from '../../auth/models/auth.model';
 import { environment } from '../../../../environments/environment';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-user-card',
   standalone: true,
-  imports: [],
+  imports: [ButtonModule],
   templateUrl: './user-card.component.html',
   styleUrl: './user-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

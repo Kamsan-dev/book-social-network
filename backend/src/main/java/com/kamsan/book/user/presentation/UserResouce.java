@@ -35,10 +35,10 @@ public class UserResouce {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "users/{userId}/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadUsersProfileImage(@PathVariable(name = "userId") UUID userPublicId,
+    public ResponseEntity<Map<String, String>> uploadUsersProfileImage(@PathVariable(name = "userId") UUID userPublicId,
                                                      @RequestParam(name = "file") MultipartFile file) {
         userService.uploadUserProfileImage(file, userPublicId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("publicId", userPublicId.toString()));
     }
 
     @GetMapping(value = "{userId}/profile-image", produces = MediaType.IMAGE_JPEG_VALUE)

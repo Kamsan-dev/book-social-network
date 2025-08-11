@@ -38,11 +38,11 @@ export class ViewUserDetailsComponent {
     }
   }
 
-  onUploadProfileImage(event: any) {
+  onUploadProfileImage(event: any, userPublicId: string) {
     const file = event.files[0];
     const formData = new FormData();
     formData.append('file', file);
     this.loading.set(true);
-    this.userService.updateProfileImage(formData);
+    this.userService.updateProfileImage(formData, userPublicId!);
   }
 }

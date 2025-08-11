@@ -12,8 +12,8 @@
     <p class="user-card__email">{{ user().email }}</p>
     <p class="user-card__details">Age 25 | FEMALE</p>
     <div class="user-card__actions">
-      <button class="btn update" (click)="onUpdateUserClick($event)">Update</button>
-      <button class="btn delete">Delete</button>
+      <p-button label="Update" [size]="'small'" [severity]="'secondary'" (onClick)="onUpdateUserClick($event)" />
+      <p-button label="Delete" [size]="'small'" [severity]="'danger'" />
     </div>
   </div>
 </div>

@@ -9,7 +9,17 @@
   <ng-template pTemplate="content">
     <div class="flex justify-center items-center flex-col gap-6">
       <img [src]="connectedUserUrlImage()" [alt]="user()?.publicId" class="rounded-full user-profile-image" />
-      <p-fileUpload name="profileImage" [customUpload]="true" [multiple]="false" accept="image/*" maxFileSize="1000000" (uploadHandler)="onUploadProfileImage($event)">
+      <p-fileUpload
+        name="profileImage"
+        [customUpload]="true"
+        [multiple]="false"
+        accept="image/*"
+        maxFileSize="1000000"
+        (uploadHandler)="onUploadProfileImage($event, user()?.publicId!)"
+      >
+        <ng-template pTemplate="content">
+          <p class="text-center">Drag and drop an image here or click to select a file</p>
+        </ng-template>
       </p-fileUpload>
     </div>
   </ng-template>

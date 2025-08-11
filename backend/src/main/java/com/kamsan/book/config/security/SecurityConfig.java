@@ -54,7 +54,6 @@ public class SecurityConfig {
         requestHandler.setCsrfRequestAttributeName(null);
         http
                 .cors(Customizer.withDefaults())
-//                .csrf(AbstractHttpConfigurer::disable)
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(tokenRepository)
                         .ignoringRequestMatchers(
